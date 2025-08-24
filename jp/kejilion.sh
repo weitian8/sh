@@ -285,7 +285,7 @@ restart() {
 	if [ $? -eq 0 ]; then
 		echo "$1サービスは再開されました。"
 	else
-		echo "エラー：再起動$1サービスに失敗しました。"
+		echo "エラー：再起動$1サービスは失敗しました。"
 	fi
 }
 
@@ -295,7 +295,7 @@ start() {
 	if [ $? -eq 0 ]; then
 		echo "$1サービスが開始されました。"
 	else
-		echo "エラー：開始$1サービスに失敗しました。"
+		echo "エラー：開始$1サービスは失敗しました。"
 	fi
 }
 
@@ -305,7 +305,7 @@ stop() {
 	if [ $? -eq 0 ]; then
 		echo "$1サービスは停止しました。"
 	else
-		echo "エラー：停止します$1サービスに失敗しました。"
+		echo "エラー：停止します$1サービスは失敗しました。"
 	fi
 }
 
@@ -816,7 +816,7 @@ docker_ipv6_off() {
 		return
 	fi
 
-	# 現在の構成を読み取ります
+	# 現在の構成をお読みください
 	local ORIGINAL_CONFIG=$(<"$CONFIG_FILE")
 
 	# JQを使用して、構成ファイルの更新を処理します
@@ -1668,7 +1668,7 @@ cf_purge_cache() {
 	read -e -p "CloudFlareのキャッシュをきれいにする必要がありますか？ （y/n）：" answer
 	if [[ "$answer" == "y" ]]; then
 	  echo "CF情報が保存されます$CONFIG_FILE、後でCF情報を変更できます"
-	  read -e -p "请输入你的 API_TOKEN: " API_TOKEN
+	  read -e -p "API_TOKENを入力してください：" API_TOKEN
 	  read -e -p "CFユーザ​​ー名を入力してください：" EMAIL
 	  read -e -p "ゾーン_id（スペースで区切られた複数）を入力してください。" -a ZONE_IDS
 
@@ -1679,7 +1679,7 @@ cf_purge_cache() {
 
   # 各ZONE_IDをループして、Clear Cacheコマンドを実行します
   for ZONE_ID in "${ZONE_IDS[@]}"; do
-	echo "ゾーン_IDのキャッシュのクリア：$ZONE_ID"
+	echo "ゾーン_idのキャッシュのクリア：$ZONE_ID"
 	curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache" \
 	-H "X-Auth-Email: $EMAIL" \
 	-H "X-Auth-Key: $API_TOKEN" \
@@ -2121,10 +2121,10 @@ web_security() {
 
 				  22)
 					  send_stats "5秒シールドでの高負荷"
-					  echo -e "${gl_huang}ウェブサイトは5分ごとに自動的に検出されます。高負荷の検出に達すると、シールドが自動的にオンになり、低負荷が自動的に5秒間オフになります。${gl_bai}"
+					  echo -e "${gl_huang}ウェブサイトは5分ごとに自動的に検出されます。高負荷が検出されると、シールドが自動的にオンになり、低負荷が5秒間自動的にオフになります。${gl_bai}"
 					  echo "--------------"
 					  echo "CFパラメーターを取得します："
-					  echo -e "CFの背景の右上隅に移動し、左側のAPIトークンを選択して、取得します${gl_huang}Global API Key${gl_bai}"
+					  echo -e "CFバックグラウンドの右上隅に移動し、左側のAPIトークンを選択して、取得します${gl_huang}Global API Key${gl_bai}"
 					  echo -e "CFバックグラウンドドメイン名の概要ページの右下に移動して${gl_huang}リージョンID${gl_bai}"
 					  echo "https://dash.cloudflare.com/login"
 					  echo "--------------"
@@ -6369,7 +6369,7 @@ schedule_task() {
 	local cron_job="$cron_time k rsync_run $num"
 	local cron_job="$cron_time k rsync_run $num"
 
-	# 同じタスクがすでに存在するかどうかを確認してください
+	# 同じタスクが既に存在するかどうかを確認してください
 	if crontab -l | grep -q "k rsync_run $num"; then
 		echo "エラー：このタスクのタイミング同期はすでに存在しています！"
 		return
@@ -6418,7 +6418,7 @@ rsync_manager() {
 		echo
 		echo "1.新しいタスクを作成します2。タスクを削除します"
 		echo "3.リモートエンドにローカル同期を実行する4。ローカルエンドにリモート同期を実行する"
-		echo "5.タイミングタスクを作成6.タイミングタスクを削除します"
+		echo "5.タイミングタスクを作成6。タイミングタスクを削除します"
 		echo "---------------------------------"
 		echo "0。前のメニューに戻ります"
 		echo "---------------------------------"
@@ -6551,7 +6551,7 @@ linux_tools() {
 	  echo -e "${gl_kjlan}1.   ${gl_bai}カールダウンロードツール${gl_huang}★${gl_bai}                   ${gl_kjlan}2.   ${gl_bai}WGETダウンロードツール${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}3.   ${gl_bai}SUDOスーパー管理許可ツール${gl_kjlan}4.   ${gl_bai}Socat Communication Connection Tool"
 	  echo -e "${gl_kjlan}5.   ${gl_bai}HTOPシステム監視ツール${gl_kjlan}6.   ${gl_bai}IFTOPネットワークトラフィック監視ツール"
-	  echo -e "${gl_kjlan}7.   ${gl_bai}zip zip圧縮減圧ツールを解凍します${gl_kjlan}8.   ${gl_bai}TAR GZ圧縮減圧ツール"
+	  echo -e "${gl_kjlan}7.   ${gl_bai}ジップzip圧縮減圧ツールを解凍します${gl_kjlan}8.   ${gl_bai}TAR GZ圧縮減圧ツール"
 	  echo -e "${gl_kjlan}9.   ${gl_bai}TMUXマルチチャネルバックグラウンドランニングツール${gl_kjlan}10.  ${gl_bai}Live StreamingツールをエンコードするFFMPEGビデオ"
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}11.  ${gl_bai}BTOPモダン監視ツール${gl_huang}★${gl_bai}             ${gl_kjlan}12.  ${gl_bai}範囲ファイル管理ツール"
@@ -7580,7 +7580,7 @@ linux_ldnmp() {
 
 	  4)
 	  clear
-	  # ケダオクラウドデスクトップ
+	  # Kedao Cloudデスクトップ
 	  webname="可道云桌面"
 	  send_stats "インストール$webname"
 	  echo "展開を開始します$webname"
@@ -7658,7 +7658,7 @@ linux_ldnmp() {
 
 	  6)
 	  clear
-	  # 一本足のカウントカード
+	  # 独脚数卡
 	  webname="独脚数卡"
 	  send_stats "インストール$webname"
 	  echo "展開を開始します$webname"
@@ -7924,7 +7924,7 @@ linux_ldnmp() {
 			  ;;
 		  2)
 			  echo "データベースのバックアップは、.GZ-endコンプレッションパッケージである必要があります。 Pagoda/1panelのバックアップデータのインポートをサポートするために、/home/directoryに入れてください。"
-			  read -e -p "ダウンロードリンクを入力して、バックアップデータをリモートでダウンロードすることもできます。 Enterを直接押してリモートダウンロードをスキップします。" url_download_db
+			  read -e -p "ダウンロードリンクを入力して、バックアップデータをリモートでダウンロードすることもできます。 Enterを直接押して、リモートダウンロードをスキップします：" url_download_db
 
 			  cd /home/
 			  if [ -n "$url_download_db" ]; then
@@ -8221,7 +8221,7 @@ linux_ldnmp() {
 	  case $dingshi in
 		  1)
 			  check_crontab_installed
-			  read -e -p "毎週のバックアップの曜日を選択します（0-6、0は日曜日を表します）：" weekday
+			  read -e -p "毎週のバックアップ（0-6、0は日曜日を表す）の曜日を選択します。" weekday
 			  (crontab -l ; echo "0 0 * * $weekday ./${useip}_beifen.sh") | crontab - > /dev/null 2>&1
 			  ;;
 		  2)
@@ -8805,7 +8805,7 @@ while true; do
 		  ;;
 
 	  9|mail)
-		send_stats "搭建邮局"
+		send_stats "郵便局を建設します"
 		clear
 		install telnet
 		local app_id="9"
@@ -8815,8 +8815,8 @@ while true; do
 			check_docker_image_update $docker_name
 
 			clear
-			echo -e "邮局服务 $check_docker $update_status"
-			echo "poste.io 是一个开源的邮件服务器解决方案，"
+			echo -e "郵便局サービス$check_docker $update_status"
+			echo "Poste.ioはオープンソースメールサーバーソリューションです。"
 			echo "ビデオの紹介：https：//www.bilibili.com/video/bv1wv421c71t?t=0.1"
 
 			echo ""
@@ -9731,7 +9731,7 @@ while true; do
 		  ;;
 
 	  38|xiaoya)
-		send_stats "Xiaoyaファミリーバケツ"
+		send_stats "Xiaoyaファミリーバケット"
 		clear
 		install_docker
 		check_disk_space 1
@@ -11684,11 +11684,11 @@ linux_Settings() {
 			echo "推奨バージョン：3.12 3.11 3.10 3.9 3.8 2.7"
 			echo "クエリの詳細：https：//www.python.org/downloads/"
 			echo "------------"
-			read -e -p "输入你要安装的python版本号（输入0退出）: " py_new_v
+			read -e -p "インストールするPythonバージョン番号を入力します（Enter 0からExit）：" py_new_v
 
 
 			if [[ "$py_new_v" == "0" ]]; then
-				send_stats "脚本PY管理"
+				send_stats "スクリプトPy管理"
 				break_end
 				linux_Settings
 			fi
@@ -11751,7 +11751,7 @@ EOF
 
 			local VERSION=$(python -V 2>&1 | awk '{print $2}')
 			echo -e "現在のPythonバージョン番号：${gl_huang}$VERSION${gl_bai}"
-			send_stats "脚本PY版本切换"
+			send_stats "スイッチスクリプトPyバージョン"
 
 			  ;;
 
@@ -12003,7 +12003,7 @@ EOF
 						  ;;
 					  4)
 					   read -e -p "ユーザー名を入力してください：" username
-					   # sudoersファイルからユーザーのsudo許可を削除します
+					   # sudoersファイルからユーザーのsudoアクセス許可を削除します
 					   sed -i "/^$username\sALL=(ALL:ALL)\sALL/d" /etc/sudoers
 
 						  ;;
@@ -12104,7 +12104,7 @@ EOF
 				echo "15。オランダのユトレヒト時間16。スペインでのマドリード時間"
 				echo "------------------------"
 				echo "アメリカ"
-				echo "21. 美国西部时间             22. 美国东部时间"
+				echo "21。WesternTime22。東部時間"
 				echo "23。カナダ時間24。メキシコの時間"
 				echo "25。ブラジル時間26。アルゼンチン時間"
 				echo "------------------------"
@@ -12267,7 +12267,7 @@ EOF
 								  (crontab -l ; echo "0 0 * * $weekday $newquest") | crontab - > /dev/null 2>&1
 								  ;;
 							  3)
-								  read -e -p "毎日タスクを実行する時間を選択しますか？ （時間、0-23）：" hour
+								  read -e -p "毎日タスクを実行する時期を選択しますか？ （時間、0-23）：" hour
 								  (crontab -l ; echo "0 $hour * * * $newquest") | crontab - > /dev/null 2>&1
 								  ;;
 							  4)
@@ -12523,7 +12523,7 @@ EOF
 			  echo "TG-BOTモニタリングと早期警告機能"
 			  echo "ビデオの紹介：https：//youtu.be/vll-eb3z_ty"
 			  echo "------------------------------------------------"
-			  echo "ネイティブCPU、メモリ、ハードディスク、トラフィック、SSHログインのリアルタイム監視と早期警告を実現するために、TG Robot APIとユーザーIDを構成する必要があります。"
+			  echo "ネイティブCPU、メモリ、ハードディスク、トラフィック、およびSSHログインのリアルタイム監視と早期警告を実現するために、TG Robot APIとユーザーIDを構成する必要があります。"
 			  echo "しきい値に達した後、ユーザーはユーザーに送信されます"
 			  echo -e "${gl_hui}- トラフィックに関しては、サーバーの再起動が再計算されます -${gl_bai}"
 			  read -e -p "必ず続行しますか？ （y/n）：" choice
@@ -12857,7 +12857,7 @@ linux_file() {
 		echo "------------------------"
 		ls --color=auto -x
 		echo "------------------------"
-		echo "1。ディレクトリを入力します2。ディレクトリを作成3。ディレクトリアクセス許可を変更する4。ディレクトリの名前を変更します"
+		echo "1.ディレクトリ2を入力します。ディレクトリを作成3。ディレクトリアクセス許可を変更します。4。ディレクトリの名前を変更します"
 		echo "5.ディレクトリを削除6。前のメニューディレクトリに戻ります"
 		echo "------------------------"
 		echo "11。ファイルを作成する12。ファイル13を編集します。ファイル許可を変更14。ファイルの名前を変更します"
@@ -12953,12 +12953,12 @@ linux_file() {
 
 				read -e -p "ターゲットパス（新しいファイル名またはディレクトリ名を含む）を入力してください。" dest_path
 				if [ -z "$dest_path" ]; then
-					echo "エラー：ターゲットパスを入力してください。"
-					send_stats "ファイルまたはディレクトリの移動に失敗しました：宛先パスが指定されていません"
+					echo "错误: 请输入目标路径。"
+					send_stats "移动文件或目录失败: 目标路径未指定"
 					continue
 				fi
 
-				mv "$src_path" "$dest_path" && echo "ファイルまたはディレクトリは移動されました$dest_path" || echo "ファイルやディレクトリの移動に失敗しました"
+				mv "$src_path" "$dest_path" && echo "ファイルまたはディレクトリが移動されました$dest_path" || echo "ファイルやディレクトリの移動に失敗しました"
 				send_stats "ファイルまたはディレクトリを移動します"
 				;;
 
@@ -13067,7 +13067,7 @@ run_commands_on_servers() {
 	local SERVERS_FILE="$HOME/cluster/servers.py"
 	local SERVERS=$(grep -oP '{"name": "\K[^"]+|"hostname": "\K[^"]+|"port": \K[^,]+|"username": "\K[^"]+|"password": "\K[^"]+' "$SERVERS_FILE")
 
-	# 抽出された情報を配列に変換します
+	# 将提取的信息转换为数组
 	IFS=$'\n' read -r -d '' -a SERVER_ARRAY <<< "$SERVERS"
 
 	# サーバーを繰り返してコマンドを実行します
@@ -13107,11 +13107,11 @@ while true; do
 	  echo -e "${gl_kjlan}------------------------${gl_bai}"
 	  echo -e "${gl_kjlan}サーバーリスト管理${gl_bai}"
 	  echo -e "${gl_kjlan}1.  ${gl_bai}サーバーを追加します${gl_kjlan}2.  ${gl_bai}サーバーを削除します${gl_kjlan}3.  ${gl_bai}サーバーを編集します"
-	  echo -e "${gl_kjlan}4.  ${gl_bai}バックアップクラスター${gl_kjlan}5.  ${gl_bai}クラスターを復元します"
+	  echo -e "${gl_kjlan}4.  ${gl_bai}备份集群                 ${gl_kjlan}5.  ${gl_bai}クラスターを復元します"
 	  echo -e "${gl_kjlan}------------------------${gl_bai}"
 	  echo -e "${gl_kjlan}バッチでタスクを実行します${gl_bai}"
-	  echo -e "${gl_kjlan}11. ${gl_bai}Tech Lionスクリプトをインストールします${gl_kjlan}12. ${gl_bai}システムを更新します${gl_kjlan}13. ${gl_bai}システムを掃除します"
-	  echo -e "${gl_kjlan}14. ${gl_bai}Dockerをインストールします${gl_kjlan}15. ${gl_bai}BBR3をインストールします${gl_kjlan}16. ${gl_bai}1G仮想メモリをセットアップします"
+	  echo -e "${gl_kjlan}11. ${gl_bai}Tech Lionスクリプトをインストールします${gl_kjlan}12. ${gl_bai}システムを更新します${gl_kjlan}13. ${gl_bai}清理系统"
+	  echo -e "${gl_kjlan}14. ${gl_bai}安装docker               ${gl_kjlan}15. ${gl_bai}BBR3をインストールします${gl_kjlan}16. ${gl_bai}设置1G虚拟内存"
 	  echo -e "${gl_kjlan}17. ${gl_bai}タイムゾーンを上海に設定します${gl_kjlan}18. ${gl_bai}すべてのポートを開きます${gl_kjlan}51. ${gl_bai}カスタムコマンド"
 	  echo -e "${gl_kjlan}------------------------${gl_bai}"
 	  echo -e "${gl_kjlan}0.  ${gl_bai}メインメニューに戻ります"

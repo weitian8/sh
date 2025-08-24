@@ -2121,7 +2121,7 @@ web_security() {
 
 				  22)
 					  send_stats "High load on 5 seconds shield"
-					  echo -e "${gl_huang}The website automatically detects every 5 minutes. When it reaches the detection of a high load, the shield will be automatically turned on, and the low load will be automatically turned off for 5 seconds.${gl_bai}"
+					  echo -e "${gl_huang}The website automatically detects every 5 minutes. When high load is detected, the shield will be automatically turned on, and low load will be automatically turned off for 5 seconds.${gl_bai}"
 					  echo "--------------"
 					  echo "Get CF parameters:"
 					  echo -e "Go to the upper right corner of the cf background, select the API token on the left, and obtain it${gl_huang}Global API Key${gl_bai}"
@@ -7924,7 +7924,7 @@ linux_ldnmp() {
 			  ;;
 		  2)
 			  echo "The database backup must be a .gz-end compressed package. Please put it in the /home/ directory to support the import of backup data of Pagoda/1panel."
-			  read -e -p "You can also enter the download link to remotely download the backup data. Directly press Enter to skip remote download:" url_download_db
+			  read -e -p "You can also enter the download link to remotely download the backup data. Directly press Enter will skip remote download:" url_download_db
 
 			  cd /home/
 			  if [ -n "$url_download_db" ]; then
@@ -12096,7 +12096,7 @@ EOF
 				echo "3. Tokyo time in Japan 4. Seoul time in South Korea"
 				echo "5. Singapore time 6. Kolkata time in India"
 				echo "7. Dubai time in the UAE 8. Sydney time in Australia"
-				echo "9. Bangkok Time, Thailand"
+				echo "9. Time in Bangkok, Thailand"
 				echo "------------------------"
 				echo "Europe"
 				echo "11. London time in the UK 12. Paris time in France"
@@ -12322,7 +12322,7 @@ EOF
 
 						  ;;
 					  2)
-						  read -e -p "Please enter the keywords for parsing content that need to be deleted:" delhost
+						  read -e -p "Please enter the keywords of parsing content that need to be deleted:" delhost
 						  sed -i "/$delhost/d" /etc/hosts
 						  send_stats "Local host parsing and deletion"
 						  ;;
