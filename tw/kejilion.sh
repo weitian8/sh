@@ -1,5 +1,5 @@
 #!/bin/bash
-sh_v="4.1.4"
+sh_v="4.1.6"
 
 
 gl_hui='\e[37m'
@@ -1771,7 +1771,7 @@ check_waf_status() {
 
 
 check_cf_mode() {
-	if [ -f "/path/to/fail2ban/config/fail2ban/action.d/cloudflare-docker.conf" ]; then
+	if [ -f "/etc/fail2ban/action.d/cloudflare-docker.conf" ]; then
 		CFmessage=" cf模式已开启"
 	else
 		CFmessage=""
@@ -1985,19 +1985,11 @@ nginx_gzip() {
 web_security() {
 	  send_stats "LDNMP環境防禦"
 	  while true; do
+		check_f2b_status
 		check_waf_status
 		check_cf_mode
-		if [ -x "$(command -v fail2ban-client)" ] ; then
-			clear
-			remove fail2ban
-			rm -rf /etc/fail2ban
-		else
 			  clear
-			  rm -f /path/to/fail2ban/config/fail2ban/jail.d/sshd.conf > /dev/null 2>&1
-			  docker exec -it fail2ban fail2ban-client reload > /dev/null 2>&1
-			  docker_name="fail2ban"
-			  check_docker_app
-			  echo -e "服務器網站防禦程序${check_docker}${gl_lv}${CFmessage}${waf_status}${gl_bai}"
+			  echo -e "服務器網站防禦程序${check_f2b_status}${gl_lv}${CFmessage}${waf_status}${gl_bai}"
 			  echo "------------------------"
 			  echo "1. 安裝防禦程序"
 			  echo "------------------------"
@@ -2019,11 +2011,16 @@ web_security() {
 			  case $sub_choice in
 				  1)
 					  f2b_install_sshd
-					  cd /path/to/fail2ban/config/fail2ban/filter.d
+					  cd /etc/fail2ban/filter.d
 					  curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/fail2ban-nginx-cc.conf
-					  cd /path/to/fail2ban/config/fail2ban/jail.d/
+					  wget ${gh_proxy}raw.githubusercontent.com/linuxserver/fail2ban-confs/master/filter.d/nginx-418.conf
+					  wget ${gh_proxy}raw.githubusercontent.com/linuxserver/fail2ban-confs/master/filter.d/nginx-deny.conf
+					  wget ${gh_proxy}raw.githubusercontent.com/linuxserver/fail2ban-confs/master/filter.d/nginx-unauthorized.conf
+					  wget ${gh_proxy}https://raw.githubusercontent.com/linuxserver/fail2ban-confs/master/filter.d/nginx-bad-request.conf
+
+					  cd /etc/fail2ban/jail.d/
 					  curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/nginx-docker-cc.conf
-					  sed -i "/cloudflare/d" /path/to/fail2ban/config/fail2ban/jail.d/nginx-docker-cc.conf
+					  sed -i "/cloudflare/d" /etc/fail2ban/jail.d/nginx-docker-cc.conf
 					  f2b_status
 					  ;;
 				  5)
@@ -2037,56 +2034,57 @@ web_security() {
 					  local xxx="fail2ban-nginx-cc"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-418"
+					  local xxx="nginx-418"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-bad-request"
+					  local xxx="nginx-bad-request"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-badbots"
+					  local xxx="nginx-badbots"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-botsearch"
+					  local xxx="nginx-botsearch"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-deny"
+					  local xxx="nginx-deny"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-http-auth"
+					  local xxx="nginx-http-auth"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-nginx-unauthorized"
+					  local xxx="nginx-unauthorized"
 					  f2b_status_xxx
 					  echo "------------------------"
-					  local xxx="docker-php-url-fopen"
+					  local xxx="php-url-fopen"
 					  f2b_status_xxx
 					  echo "------------------------"
 
 					  ;;
 
 				  7)
-					  docker exec -it fail2ban fail2ban-client status
+					  fail2ban-client status
 					  ;;
 				  8)
-					  tail -f /path/to/fail2ban/config/log/fail2ban/fail2ban.log
+					  tail -f /var/log/fail2ban.log
 
 					  ;;
 				  9)
-					  docker rm -f fail2ban
-					  rm -rf /path/to/fail2ban
+					  remove fail2ban
+					  rm -rf /etc/fail2ban
 					  crontab -l | grep -v "CF-Under-Attack.sh" | crontab - 2>/dev/null
 					  echo "Fail2Ban防禦程序已卸載"
+					  break
 					  ;;
 
 				  11)
 					  install nano
-					  nano /path/to/fail2ban/config/fail2ban/jail.d/nginx-docker-cc.conf
+					  nano /etc/fail2ban/jail.d/nginx-docker-cc.conf
 					  f2b_status
 					  break
 					  ;;
 
 				  12)
-					  docker exec -it fail2ban fail2ban-client unban --all
+					  fail2ban-client unban --all
 					  ;;
 
 				  21)
@@ -2099,14 +2097,14 @@ web_security() {
 					  wget -O /home/web/conf.d/default.conf ${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/default11.conf
 					  docker exec nginx nginx -s reload
 
-					  cd /path/to/fail2ban/config/fail2ban/jail.d/
+					  cd /etc/fail2ban/jail.d/
 					  curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/nginx-docker-cc.conf
 
-					  cd /path/to/fail2ban/config/fail2ban/action.d
+					  cd /etc/fail2ban/action.d
 					  curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/cloudflare-docker.conf
 
-					  sed -i "s/kejilion@outlook.com/$cfuser/g" /path/to/fail2ban/config/fail2ban/action.d/cloudflare-docker.conf
-					  sed -i "s/APIKEY00000/$cftoken/g" /path/to/fail2ban/config/fail2ban/action.d/cloudflare-docker.conf
+					  sed -i "s/kejilion@outlook.com/$cfuser/g" /etc/fail2ban/action.d/cloudflare-docker.conf
+					  sed -i "s/APIKEY00000/$cftoken/g" /etc/fail2ban/action.d/cloudflare-docker.conf
 					  f2b_status
 
 					  echo "已配置cloudflare模式，可在cf後台，站點-安全性-事件中查看攔截記錄"
@@ -2171,7 +2169,6 @@ web_security() {
 					  break
 					  ;;
 			  esac
-		fi
 	  break_end
 	  done
 }
@@ -3017,52 +3014,35 @@ tmux new -d -s "$base_name-$tmuxd_ID" "$tmuxd"
 
 
 f2b_status() {
-	 docker exec -it fail2ban fail2ban-client reload
+	 fail2ban-client reload
 	 sleep 3
-	 docker exec -it fail2ban fail2ban-client status
+	 fail2ban-client status
 }
 
 f2b_status_xxx() {
-	docker exec -it fail2ban fail2ban-client status $xxx
+	fail2ban-client status $xxx
+}
+
+check_f2b_status() {
+	if command -v fail2ban-client >/dev/null 2>&1; then
+		check_f2b_status="${gl_lv}已安装${gl_bai}"
+	else
+		check_f2b_status="${gl_hui}未安装${gl_bai}"
+	fi
 }
 
 f2b_install_sshd() {
 
-	docker run -d \
-		--name=fail2ban \
-		--net=host \
-		--cap-add=NET_ADMIN \
-		--cap-add=NET_RAW \
-		-e PUID=1000 \
-		-e PGID=1000 \
-		-e TZ=Etc/UTC \
-		-e VERBOSITY=-vv \
-		-v /path/to/fail2ban/config:/config \
-		-v /var/log:/var/log:ro \
-		-v /home/web/log/nginx/:/remotelogs/nginx:ro \
-		--restart=always \
-		lscr.io/linuxserver/fail2ban:latest
+	docker rm -f fail2ban >/dev/null 2>&1
+	install fail2ban
+	start fail2ban
+	enable fail2ban
 
-	sleep 3
-	if grep -q 'Alpine' /etc/issue; then
-		cd /path/to/fail2ban/config/fail2ban/filter.d
-		curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/alpine-sshd.conf
-		curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/alpine-sshd-ddos.conf
-		cd /path/to/fail2ban/config/fail2ban/jail.d/
-		curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/alpine-ssh.conf
-	elif command -v dnf &>/dev/null; then
-		cd /path/to/fail2ban/config/fail2ban/jail.d/
+	if command -v dnf &>/dev/null; then
+		cd /etc/fail2ban/jail.d/
 		curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/centos-ssh.conf
-	else
-		install rsyslog
-		systemctl start rsyslog
-		systemctl enable rsyslog
-		cd /path/to/fail2ban/config/fail2ban/jail.d/
-		curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/config/main/fail2ban/linux-ssh.conf
-		systemctl restart rsyslog
 	fi
 
-	rm -f /path/to/fail2ban/config/fail2ban/jail.d/sshd.conf
 }
 
 f2b_sshd() {
@@ -6457,7 +6437,7 @@ rsync_manager() {
 
 
 
-linux_ps() {
+linux_info() {
 
 	clear
 	send_stats "系統信息查詢"
@@ -6870,16 +6850,13 @@ docker_ssh_migration() {
 	BLUE='\033[0;36m'
 	NC='\033[0m'
 
-	BACKUP_ROOT="/tmp"
-	DATE_STR=$(date +%Y%m%d_%H%M%S)
-
-
 	is_compose_container() {
 		local container=$1
 		docker inspect "$container" | jq -e '.[0].Config.Labels["com.docker.compose.project"]' >/dev/null 2>&1
 	}
 
 	list_backups() {
+		local BACKUP_ROOT="/tmp"
 		echo -e "${BLUE}當前備份列表:${NC}"
 		ls -1dt ${BACKUP_ROOT}/docker_backup_* 2>/dev/null || echo "無備份"
 	}
@@ -6899,6 +6876,8 @@ docker_ssh_migration() {
 		install tar jq gzip
 		install_docker
 
+		local BACKUP_ROOT="/tmp"
+		local DATE_STR=$(date +%Y%m%d_%H%M%S)
 		local TARGET_CONTAINERS=()
 		if [ -z "$containers" ]; then
 			mapfile -t TARGET_CONTAINERS < <(docker ps --format '{{.Names}}')
@@ -7126,13 +7105,15 @@ docker_ssh_migration() {
 
 		read -e -p  "目標服務器IP:" TARGET_IP
 		read -e -p  "目標服務器SSH用戶名:" TARGET_USER
+		read -e -p "目標服務器SSH端口 [默認22]:" TARGET_PORT
+		local TARGET_PORT=${TARGET_PORT:-22}
 
-		LATEST_TAR="$BACKUP_DIR"  # 这里直接传整个目录
+		local LATEST_TAR="$BACKUP_DIR"
 
 		echo -e "${YELLOW}傳輸備份中...${NC}"
 		if [[ -z "$TARGET_PASS" ]]; then
 			# 使用密鑰登錄
-			scp -o StrictHostKeyChecking=no -r "$LATEST_TAR" "$TARGET_USER@$TARGET_IP:/tmp/"
+			scp -P "$TARGET_PORT" -o StrictHostKeyChecking=no -r "$LATEST_TAR" "$TARGET_USER@$TARGET_IP:/tmp/"
 		fi
 
 	}
@@ -7764,7 +7745,8 @@ linux_Oracle() {
 
 		  4)
 			  clear
-			  echo "該功能處於開發階段，敬請期待！"
+			  send_stats "R探長開機腳本"
+			  bash <(wget -qO- ${gh_proxy}github.com/Yohann0617/oci-helper/releases/latest/download/sh_oci-helper_install.sh)
 			  ;;
 		  5)
 			  clear
@@ -8383,7 +8365,7 @@ linux_ldnmp() {
 
 	  docker run -d \
 		--name bitwarden \
-		--restart always \
+		--restart=always \
 		-p 3280:80 \
 		-v /home/web/html/$yuming/bitwarden/data:/data \
 		vaultwarden/server
@@ -8404,7 +8386,7 @@ linux_ldnmp() {
 	  install_ssltls
 	  certs_status
 
-	  docker run -d --name halo --restart always -p 8010:8090 -v /home/web/html/$yuming/.halo2:/root/.halo2 halohub/halo:2
+	  docker run -d --name halo --restart=always -p 8010:8090 -v /home/web/html/$yuming/.halo2:/root/.halo2 halohub/halo:2
 	  duankou=8010
 	  reverse_proxy
 
@@ -8523,6 +8505,8 @@ linux_ldnmp() {
 		case "$choice" in
 		  [Yy])
 			read -e -p "請輸入遠端服務器IP:" remote_ip
+			read -e -p "目標服務器SSH端口 [默認22]:" TARGET_PORT
+			local TARGET_PORT=${TARGET_PORT:-22}
 			if [ -z "$remote_ip" ]; then
 			  echo "錯誤: 請輸入遠端服務器IP。"
 			  continue
@@ -8531,7 +8515,7 @@ linux_ldnmp() {
 			if [ -n "$latest_tar" ]; then
 			  ssh-keygen -f "/root/.ssh/known_hosts" -R "$remote_ip"
 			  sleep 2  # 添加等待时间
-			  scp -o StrictHostKeyChecking=no "$latest_tar" "root@$remote_ip:/home/"
+			  scp -P "$TARGET_PORT" -o StrictHostKeyChecking=no "$latest_tar" "root@$remote_ip:/home/"
 			  echo "文件已傳送至遠程服務器home目錄。"
 			else
 			  echo "未找到要傳送的文件。"
@@ -8887,7 +8871,7 @@ while true; do
 	  echo -e "${gl_kjlan}93.  ${color93}Dufs極簡靜態文件服務器${gl_kjlan}94.  ${color94}Gopeed高速下載工具"
 	  echo -e "${gl_kjlan}95.  ${color95}paperless文檔管理平台${gl_kjlan}96.  ${color96}2FAuth自託管二步驗證器"
 	  echo -e "${gl_kjlan}97.  ${color97}WireGuard組網(服務端)${gl_kjlan}98.  ${color98}WireGuard組網(客戶端)"
-	  echo -e "${gl_kjlan}99.  ${color99}DSM群暉虛擬機"
+	  echo -e "${gl_kjlan}99.  ${color99}DSM群暉虛擬機${gl_kjlan}100. ${color100}Syncthing點對點文件同步工具"
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}b.   ${gl_bai}備份全部應用數據${gl_kjlan}r.   ${gl_bai}還原全部應用數據"
 	  echo -e "${gl_kjlan}------------------------"
@@ -9496,7 +9480,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d --name looking-glass --restart always -p ${docker_port}:80 wikihostinc/looking-glass-server
+			docker run -d --name looking-glass --restart=always -p ${docker_port}:80 wikihostinc/looking-glass-server
 
 		}
 
@@ -9524,7 +9508,7 @@ while true; do
 				-p 53:53/tcp \
 				-p 53:53/udp \
 				-p ${docker_port}:3000/tcp \
-				--restart always \
+				--restart=always \
 				adguard/adguardhome
 
 
@@ -9651,7 +9635,7 @@ while true; do
 				-p ${docker_port}:9000 \
 				-v /var/run/docker.sock:/var/run/docker.sock \
 				-v /home/docker/portainer:/data \
-				--restart always \
+				--restart=always \
 				portainer/portainer
 
 		}
@@ -9675,7 +9659,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d -p ${docker_port}:8080 -v /home/docker/vscode-web:/home/coder/.local/share/code-server --name vscode-web --restart always codercom/code-server
+			docker run -d -p ${docker_port}:8080 -v /home/docker/vscode-web:/home/coder/.local/share/code-server --name vscode-web --restart=always codercom/code-server
 
 		}
 
@@ -9724,7 +9708,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d --name memos -p ${docker_port}:5230 -v /home/docker/memos:/var/opt/memos --restart always ghcr.io/usememos/memos:latest
+			docker run -d --name memos -p ${docker_port}:5230 -v /home/docker/memos:/var/opt/memos --restart=always ghcr.io/usememos/memos:latest
 
 		}
 
@@ -9846,7 +9830,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d -p ${docker_port}:8080 --name speedtest --restart always ghcr.io/librespeed/speedtest
+			docker run -d -p ${docker_port}:8080 --name speedtest --restart=always ghcr.io/librespeed/speedtest
 
 		}
 
@@ -9894,7 +9878,7 @@ while true; do
 
 			docker run -d \
 				--name photoprism \
-				--restart always \
+				--restart=always \
 				--security-opt seccomp=unconfined \
 				--security-opt apparmor=unconfined \
 				-p ${docker_port}:2342 \
@@ -9999,7 +9983,7 @@ while true; do
 
 			docker run -d \
 				--name pingvin-share \
-				--restart always \
+				--restart=always \
 				-p ${docker_port}:3000 \
 				-v /home/docker/pingvin-share/data:/opt/app/backend/data \
 				stonith404/pingvin-share
@@ -10125,7 +10109,7 @@ while true; do
 		local docker_img="jrohy/webssh"
 		local docker_port=8040
 		docker_rum() {
-			docker run -d -p ${docker_port}:5032 --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
+			docker run -d -p ${docker_port}:5032 --restart=always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
 		}
 
 		local docker_describe="简易在线ssh连接工具和sftp工具"
@@ -10243,7 +10227,7 @@ while true; do
 				--name registry \
 				-v /home/docker/registry:/var/lib/registry \
 				-e REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io \
-				--restart always \
+				--restart=always \
 				registry:2
 
 		}
@@ -10264,7 +10248,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d --name ghproxy --restart always -p ${docker_port}:8080 -v /home/docker/ghproxy/config:/data/ghproxy/config wjqserver/ghproxy:latest
+			docker run -d --name ghproxy --restart=always -p ${docker_port}:8080 -v /home/docker/ghproxy/config:/data/ghproxy/config wjqserver/ghproxy:latest
 
 		}
 
@@ -10380,7 +10364,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d --restart always -p ${docker_port}:5000 \
+			docker run -d --restart=always -p ${docker_port}:5000 \
 				-v /home/docker/datastore:/datastore \
 				--name changedetection dgtlmoon/changedetection.io:latest
 
@@ -10435,7 +10419,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d -p ${docker_port}:8080 -v /home/docker/ollama:/root/.ollama -v /home/docker/ollama/open-webui:/app/backend/data --name ollama --restart always ghcr.io/open-webui/open-webui:ollama
+			docker run -d -p ${docker_port}:8080 -v /home/docker/ollama:/root/.ollama -v /home/docker/ollama/open-webui:/app/backend/data --name ollama --restart=always ghcr.io/open-webui/open-webui:ollama
 
 		}
 
@@ -10487,7 +10471,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d -p ${docker_port}:8080 -v /home/docker/ollama:/root/.ollama -v /home/docker/ollama/open-webui:/app/backend/data --name ollama --restart always ghcr.io/open-webui/open-webui:ollama
+			docker run -d -p ${docker_port}:8080 -v /home/docker/ollama:/root/.ollama -v /home/docker/ollama/open-webui:/app/backend/data --name ollama --restart=always ghcr.io/open-webui/open-webui:ollama
 
 		}
 
@@ -10703,7 +10687,7 @@ while true; do
 
 		docker_rum() {
 
-			docker run -d -p ${docker_port}:8080 -v /home/docker/open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
+			docker run -d -p ${docker_port}:8080 -v /home/docker/open-webui:/app/backend/data --name open-webui --restart=always ghcr.io/open-webui/open-webui:main
 
 		}
 
@@ -10747,7 +10731,7 @@ while true; do
 			chmod -R 777 /home/docker/n8n
 
 			docker run -d --name n8n \
-			  --restart always \
+			  --restart=always \
 			  -p ${docker_port}:5678 \
 			  -v /home/docker/n8n:/home/node/.n8n \
 			  -e N8N_HOST=${yuming} \
@@ -10921,7 +10905,7 @@ while true; do
 
 			docker run -d \
 				--name bitwarden \
-				--restart always \
+				--restart=always \
 				-p ${docker_port}:80 \
 				-v /home/docker/bitwarden/data:/data \
 				vaultwarden/server
@@ -12005,7 +11989,7 @@ while true; do
 			  --cap-add SYS_MODULE \
 			  -v /home/docker/wireguard/config:/config \
 			  -v /lib/modules:/lib/modules:ro \
-			  --restart always \
+			  --restart=always \
 			  kjlion/wireguard:alpine
 
 			sleep 3
@@ -12082,8 +12066,34 @@ while true; do
 
 
 
+	100|syncthing)
 
+		local app_id="100"
+		local docker_name="syncthing"
+		local docker_img="syncthing/syncthing:latest"
+		local docker_port=8100
 
+		docker_rum() {
+			docker run -d \
+			  --name=syncthing \
+			  --hostname=my-syncthing \
+			  --restart=always \
+			  -p ${docker_port}:8384 \
+			  -p 22000:22000/tcp \
+			  -p 22000:22000/udp \
+			  -p 21027:21027/udp \
+			  -v /home/docker/syncthing:/var/syncthing \
+			  syncthing/syncthing:latest
+		}
+
+		local docker_describe="开源的点对点文件同步工具，类似于 Dropbox、Resilio Sync，但完全去中心化。"
+		local docker_url="官网介绍: https://github.com/syncthing/syncthing"
+		local docker_use=""
+		local docker_passwd=""
+		local app_size="1"
+		docker_app
+
+		;;
 
 	  b)
 	  	clear
@@ -12100,6 +12110,9 @@ while true; do
 			case "$choice" in
 			  [Yy])
 				read -e -p "請輸入遠端服務器IP:" remote_ip
+				read -e -p "目標服務器SSH端口 [默認22]:" TARGET_PORT
+				local TARGET_PORT=${TARGET_PORT:-22}
+
 				if [ -z "$remote_ip" ]; then
 				  echo "錯誤: 請輸入遠端服務器IP。"
 				  continue
@@ -12108,7 +12121,7 @@ while true; do
 				if [ -n "$latest_tar" ]; then
 				  ssh-keygen -f "/root/.ssh/known_hosts" -R "$remote_ip"
 				  sleep 2  # 添加等待时间
-				  scp -o StrictHostKeyChecking=no "$latest_tar" "root@$remote_ip:/"
+				  scp -P "$TARGET_PORT" -o StrictHostKeyChecking=no "$latest_tar" "root@$remote_ip:/"
 				  echo "文件已傳送至遠程服務器/根目錄。"
 				else
 				  echo "未找到要傳送的文件。"
@@ -13093,17 +13106,9 @@ EOF
 		  root_use
 		  send_stats "ssh防禦"
 		  while true; do
-			if [ -x "$(command -v fail2ban-client)" ] ; then
-				clear
-				remove fail2ban
-				rm -rf /etc/fail2ban
-			else
-				clear
-				rm -f /path/to/fail2ban/config/fail2ban/jail.d/sshd.conf > /dev/null 2>&1
-				docker exec -it fail2ban fail2ban-client reload > /dev/null 2>&1
-				docker_name="fail2ban"
-				check_docker_app
-				echo -e "SSH防禦程序$check_docker"
+
+				check_f2b_status
+				echo -e "SSH防禦程序$check_f2b_status"
 				echo "fail2ban是一個SSH防止暴力破解工具"
 				echo "官網介紹:${gh_proxy}github.com/fail2ban/fail2ban"
 				echo "------------------------"
@@ -13119,7 +13124,6 @@ EOF
 				read -e -p "請輸入你的選擇:" sub_choice
 				case $sub_choice in
 					1)
-						install_docker
 						f2b_install_sshd
 
 						cd ~
@@ -13133,19 +13137,19 @@ EOF
 						break_end
 						;;
 					3)
-						tail -f /path/to/fail2ban/config/log/fail2ban/fail2ban.log
+						tail -f /var/log/fail2ban.log
 						break
 						;;
 					9)
-						docker rm -f fail2ban
-						rm -rf /path/to/fail2ban
+						remove fail2ban
+						rm -rf /etc/fail2ban
 						echo "Fail2Ban防禦程序已卸載"
+						break
 						;;
 					*)
 						break
 						;;
 				esac
-			fi
 		  done
 			  ;;
 
@@ -13403,6 +13407,7 @@ EOF
 			send_stats "留言板"
 			echo "訪問科技lion官方留言板，您對腳本有任何想法歡迎留言交流！"
 			echo "https://board.kejilion.pro"
+			echo "公共密碼: kejilion.sh"
 			  ;;
 
 		  66)
@@ -14139,7 +14144,7 @@ echo -e "${gl_kjlan}------------------------${gl_bai}"
 read -e -p "請輸入你的選擇:" choice
 
 case $choice in
-  1) linux_ps ;;
+  1) linux_info ;;
   2) clear ; send_stats "系統更新" ; linux_update ;;
   3) clear ; send_stats "系統清理" ; linux_clean ;;
   4) linux_tools ;;
@@ -14198,6 +14203,7 @@ echo "軟件狀態查看        k status sshd | k 狀態 sshd"
 echo "軟件開機啟動        k enable docker | k autostart docke | k 開機啟動 docker"
 echo "域名證書申請        k ssl"
 echo "域名證書到期查詢    k ssl ps"
+echo "docker管理平面      k docker"
 echo "docker環境安裝      k docker install |k docker 安裝"
 echo "docker容器管理      k docker ps |k docker 容器"
 echo "docker鏡像管理      k docker img |k docker 鏡像"
@@ -14214,6 +14220,7 @@ echo "阻止IP              k zzip 177.5.25.36 |k 阻止IP 177.5.25.36"
 echo "命令收藏夾          k fav | k 命令收藏夾"
 echo "應用市場管理        k app"
 echo "應用編號快捷管理    k app 26 | k app 1panel | k app npm"
+echo "顯示系統信息        k info"
 }
 
 
@@ -14408,7 +14415,7 @@ else
 					docker_image
 					;;
 				*)
-					k_info
+					linux_docker
 					;;
 			esac
 			;;
@@ -14435,6 +14442,10 @@ else
 			linux_panel "$@"
 			;;
 
+
+		info)
+			linux_info
+			;;
 
 		*)
 			k_info
