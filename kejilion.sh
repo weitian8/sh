@@ -8805,7 +8805,7 @@ while true; do
 	  local app_numbers=$([ -f /home/docker/appno.txt ] && cat /home/docker/appno.txt || echo "")
 
 	  # 用循环设置颜色
-	  for i in {1..100}; do
+	  for i in {1..150}; do
 		  if echo "$app_numbers" | grep -q "^$i$"; then
 			  declare "color$i=${gl_lv}"
 		  else
@@ -12119,7 +12119,7 @@ while true; do
 		}
 
 		docker_app_update() {
-			cd  /home/docker/MoneyPrinterTurbo/docker/ && docker compose down --rmi all
+			cd  /home/docker/MoneyPrinterTurbo/ && docker compose down --rmi all
 			cd  /home/docker/MoneyPrinterTurbo/
 			git pull origin main
 			sed -i "s/8501:8501/${docker_port}:8501/g" /home/docker/MoneyPrinterTurbo/docker-compose.yml
@@ -12138,6 +12138,9 @@ while true; do
 
 
 
+	  102)
+
+		  ;;
 
 
 
