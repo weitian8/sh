@@ -616,7 +616,7 @@ while true; do
 	echo ""
 	echo "鏡像操作"
 	echo "------------------------"
-	echo "1. 取得指定鏡像 3. 刪除指定鏡像"
+	echo "1. 获取指定镜像             3. 删除指定镜像"
 	echo "2. 更新指定鏡像 4. 刪除所有鏡像"
 	echo "------------------------"
 	echo "0. 返回上一級選單"
@@ -1218,7 +1218,7 @@ iptables_panel() {
 add_swap() {
 	local new_swap=$1  # 获取传入的参数
 
-	# 取得目前系統中所有的 swap 分區
+	# 取得目前系統中所有的 swap 分割區
 	local swap_partitions=$(grep -E '^/dev/' /proc/swaps | awk '{print $1}')
 
 	# 遍歷並刪除所有的 swap 分割區
@@ -2575,7 +2575,7 @@ check_docker_image_update() {
 		local remote_date=$(curl -s "$api_url" | jq -r '.published_at' 2>/dev/null)
 
 	else
-		# --- 場景 C: 標準 Docker Hub ---
+		# --- 场景 C: 标准 Docker Hub ---
 		local image_repo=${full_image_name%%:*}
 		local image_tag=${full_image_name##*:}
 		[[ "$image_repo" == "$image_tag" ]] && image_tag="latest"
@@ -4959,7 +4959,7 @@ dd_xitong() {
 			echo -e "${gl_hong}注意:${gl_bai}重裝有風險失聯，不放心者慎用。重裝預計花費15分鐘，請提前備份資料。"
 			echo -e "${gl_hui}感謝bin456789大佬和leitbogioro大佬的腳本支持！${gl_bai} "
 			echo -e "${gl_hui}bin456789專案地址: https://github.com/bin456789/reinstall${gl_bai}"
-			echo -e "${gl_hui}leitbogioro项目地址: https://github.com/leitbogioro/Tools${gl_bai}"
+			echo -e "${gl_hui}leitbogioro專案網址: https://github.com/leitbogioro/Tools${gl_bai}"
 			echo "------------------------"
 			echo "1. Debian 13                  2. Debian 12"
 			echo "3. Debian 11                  4. Debian 10"
@@ -9304,7 +9304,7 @@ while true; do
 	  echo -e "${gl_kjlan}27.  ${color27}Dockge容器堆疊管理面板${gl_kjlan}28.  ${color28}LibreSpeed測速工具"
 	  echo -e "${gl_kjlan}29.  ${color29}searxng聚合搜尋站${gl_huang}★${gl_bai}                 ${gl_kjlan}30.  ${color30}PhotoPrism私有相簿系統"
 	  echo -e "${gl_kjlan}-------------------------"
-	  echo -e "${gl_kjlan}31.  ${color31}StirlingPDF工具大全${gl_kjlan}32.  ${color32}drawio免費的線上圖表軟體${gl_huang}★${gl_bai}"
+	  echo -e "${gl_kjlan}31.  ${color31}StirlingPDF工具大全                 ${gl_kjlan}32.  ${color32}drawio免費的線上圖表軟體${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}33.  ${color33}Sun-Panel導航面板${gl_kjlan}34.  ${color34}Pingvin-Share文件分享平台"
 	  echo -e "${gl_kjlan}35.  ${color35}極簡朋友圈${gl_kjlan}36.  ${color36}LobeChatAI聊天聚合網站"
 	  echo -e "${gl_kjlan}37.  ${color37}MyIP工具箱${gl_huang}★${gl_bai}                        ${gl_kjlan}38.  ${color38}小雅alist全家桶"
@@ -9337,7 +9337,7 @@ while true; do
 	  echo -e "${gl_kjlan}81.  ${color81}JitsiMeet視訊會議${gl_kjlan}82.  ${color82}gpt-load高性能AI透明代理"
 	  echo -e "${gl_kjlan}83.  ${color83}komari伺服器監控工具${gl_kjlan}84.  ${color84}Wallos個人財務管理工具"
 	  echo -e "${gl_kjlan}85.  ${color85}immich圖片影片管理器${gl_kjlan}86.  ${color86}jellyfin媒體管理系統"
-	  echo -e "${gl_kjlan}87.  ${color87}SyncTV一起看片神器${gl_kjlan}88.  ${color88}Owncast自架直播平台"
+	  echo -e "${gl_kjlan}87.  ${color87}SyncTV一起看片神器                  ${gl_kjlan}88.  ${color88}Owncast自架直播平台"
 	  echo -e "${gl_kjlan}89.  ${color89}FileCodeBox檔案快遞${gl_kjlan}90.  ${color90}matrix去中心化聊天協議"
 	  echo -e "${gl_kjlan}-------------------------"
 	  echo -e "${gl_kjlan}91.  ${color91}gitea私有程式碼倉庫${gl_kjlan}92.  ${color92}FileBrowser文件管理器"
@@ -9346,7 +9346,7 @@ while true; do
 	  echo -e "${gl_kjlan}97.  ${color97}WireGuard組網(服務端)${gl_kjlan}98.  ${color98}WireGuard組網(客戶端)"
 	  echo -e "${gl_kjlan}99.  ${color99}DSM群暉虛擬機${gl_kjlan}100. ${color100}Syncthing點對點檔案同步工具"
 	  echo -e "${gl_kjlan}-------------------------"
-	  echo -e "${gl_kjlan}101. ${color101}AI影片產生工具${gl_kjlan}102. ${color102}VoceChat多人線上聊天系統"
+	  echo -e "${gl_kjlan}101. ${color101}AI影片生成工具${gl_kjlan}102. ${color102}VoceChat多人線上聊天系統"
 	  echo -e "${gl_kjlan}103. ${color103}Umami網站統計工具${gl_kjlan}104. ${color104}Stream四層代理轉送工具"
 	  echo -e "${gl_kjlan}105. ${color105}思源筆記${gl_kjlan}106. ${color106}Drawnix開源白板工具"
 	  echo -e "${gl_kjlan}107. ${color107}PanSou網盤搜尋${gl_kjlan}108. ${color108}LangBot聊天機器人"
@@ -10758,7 +10758,7 @@ while true; do
 		}
 
 		local docker_describe="使用Go實現的GHProxy，用於加速部分地區Github倉庫的拉取。"
-		local docker_url="官网介绍: https://github.com/WJQSERVER-STUDIO/ghproxy"
+		local docker_url="官網介紹: https://github.com/WJQSERVER-STUDIO/ghproxy"
 		local docker_use=""
 		local docker_passwd=""
 		local app_size="1"
@@ -11153,7 +11153,7 @@ while true; do
 
 	  62|ragflow)
 		local app_id="62"
-		local app_name="RAGFlow知識庫"
+		local app_name="RAGFlow知识库"
 		local app_text="基於深度文件理解的開源 RAG（檢索增強生成）引擎"
 		local app_url="官方網站: https://github.com/infiniflow/ragflow"
 		local docker_name="ragflow-server"
@@ -12610,7 +12610,7 @@ while true; do
 
 	  101|moneyprinterturbo)
 		local app_id="101"
-		local app_name="AI影片產生工具"
+		local app_name="AI影片生成工具"
 		local app_text="MoneyPrinterTurbo是一款使用AI大模型合成高清短影片的工具"
 		local app_url="官方網站: https://github.com/harry0703/MoneyPrinterTurbo"
 		local docker_name="moneyprinterturbo"
@@ -12680,7 +12680,7 @@ while true; do
 		local app_id="103"
 		local app_name="Umami網站統計工具"
 		local app_text="開源、輕量、隱私友善的網站分析工具，類似GoogleAnalytics。"
-		local app_url="官方网站: https://github.com/umami-software/umami"
+		local app_url="官方網站: https://github.com/umami-software/umami"
 		local docker_name="umami-umami-1"
 		local docker_port="8103"
 		local app_size="1"
@@ -13588,7 +13588,7 @@ EOF
 						send_stats "SSH連接埠已修改"
 						new_ssh_port
 					elif [[ $new_port -eq 0 ]]; then
-						send_stats "退出SSH埠修改"
+						send_stats "退出SSH連接埠修改"
 						break
 					else
 						echo "連接埠號碼無效，請輸入1到65535之間的數字。"
@@ -14683,7 +14683,7 @@ linux_file() {
 				send_stats "壓縮檔案/目錄"
 				;;
 			22) # 解压文件/目录
-				read -e -p "請輸入要解壓縮的檔案名稱 (.tar.gz):" filename
+				read -e -p "請輸入要解壓縮的檔名 (.tar.gz):" filename
 				install tar
 				tar -xzvf "$filename" && echo "已解壓縮$filename" || echo "解壓縮失敗"
 				send_stats "解壓縮檔案/目錄"
